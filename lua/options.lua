@@ -19,3 +19,23 @@ o.expandtab = false -- /t -> #tabstop spaces
 
 o.foldmethod = 'indent'
 o.foldlevel = 99
+
+-- trailing whitespace highlight and auto remove on save
+vim.api.nvim_set_hl(0, "TrailingWhitespace", { bg = "red" })
+
+local group = vim.api.nvim_create_augroup("TrailingWhitespace", { clear = true })
+
+vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
+		group = group,
+		command = [[match TrailingWhitespace /\s\+\%#\@<!$/]],
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+		group = group,
+		command = [[match none]],
+})
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+		group = group,
+		command = [[%s/\s\+$//e]],
+})
